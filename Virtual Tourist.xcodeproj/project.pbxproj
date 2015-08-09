@@ -9,11 +9,13 @@
 /* Begin PBXBuildFile section */
 		B30A15A81B77DA0400E5F3F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15A71B77DA0400E5F3F2 /* AppDelegate.swift */; };
 		B30A15AB1B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B30A15A91B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodeld */; };
-		B30A15AD1B77DA0400E5F3F2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15AC1B77DA0400E5F3F2 /* ViewController.swift */; };
+		B30A15AD1B77DA0400E5F3F2 /* TravelLocationsMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15AC1B77DA0400E5F3F2 /* TravelLocationsMapViewController.swift */; };
 		B30A15B01B77DA0400E5F3F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B30A15AE1B77DA0400E5F3F2 /* Main.storyboard */; };
 		B30A15B21B77DA0400E5F3F2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B30A15B11B77DA0400E5F3F2 /* Images.xcassets */; };
 		B30A15B51B77DA0400E5F3F2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B30A15B31B77DA0400E5F3F2 /* LaunchScreen.xib */; };
 		B30A15C11B77DA0400E5F3F2 /* Virtual_TouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15C01B77DA0400E5F3F2 /* Virtual_TouristTests.swift */; };
+		B30A15CB1B77DDAF00E5F3F2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30A15CA1B77DDAF00E5F3F2 /* MapKit.framework */; };
+		B30A15CD1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15CC1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,13 +33,15 @@
 		B30A15A61B77DA0400E5F3F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B30A15A71B77DA0400E5F3F2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B30A15AA1B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Virtual_Tourist.xcdatamodel; sourceTree = "<group>"; };
-		B30A15AC1B77DA0400E5F3F2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		B30A15AC1B77DA0400E5F3F2 /* TravelLocationsMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelLocationsMapViewController.swift; sourceTree = "<group>"; };
 		B30A15AF1B77DA0400E5F3F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B30A15B11B77DA0400E5F3F2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B30A15B41B77DA0400E5F3F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		B30A15BA1B77DA0400E5F3F2 /* Virtual TouristTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Virtual TouristTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B30A15BF1B77DA0400E5F3F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B30A15C01B77DA0400E5F3F2 /* Virtual_TouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Virtual_TouristTests.swift; sourceTree = "<group>"; };
+		B30A15CA1B77DDAF00E5F3F2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		B30A15CC1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B30A15CB1B77DDAF00E5F3F2 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +66,7 @@
 		B30A15991B77DA0300E5F3F2 = {
 			isa = PBXGroup;
 			children = (
+				B30A15CA1B77DDAF00E5F3F2 /* MapKit.framework */,
 				B30A15A41B77DA0400E5F3F2 /* Virtual Tourist */,
 				B30A15BD1B77DA0400E5F3F2 /* Virtual TouristTests */,
 				B30A15A31B77DA0400E5F3F2 /* Products */,
@@ -80,12 +86,13 @@
 			isa = PBXGroup;
 			children = (
 				B30A15A71B77DA0400E5F3F2 /* AppDelegate.swift */,
-				B30A15AC1B77DA0400E5F3F2 /* ViewController.swift */,
+				B30A15AC1B77DA0400E5F3F2 /* TravelLocationsMapViewController.swift */,
 				B30A15AE1B77DA0400E5F3F2 /* Main.storyboard */,
 				B30A15B11B77DA0400E5F3F2 /* Images.xcassets */,
 				B30A15B31B77DA0400E5F3F2 /* LaunchScreen.xib */,
 				B30A15A91B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodeld */,
 				B30A15A51B77DA0400E5F3F2 /* Supporting Files */,
+				B30A15CC1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -159,6 +166,7 @@
 		B30A159A1B77DA0300E5F3F2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = "Aldin Fajic";
 				TargetAttributes = {
@@ -215,9 +223,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B30A15AD1B77DA0400E5F3F2 /* ViewController.swift in Sources */,
+				B30A15AD1B77DA0400E5F3F2 /* TravelLocationsMapViewController.swift in Sources */,
 				B30A15AB1B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodeld in Sources */,
 				B30A15A81B77DA0400E5F3F2 /* AppDelegate.swift in Sources */,
+				B30A15CD1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +422,7 @@
 				B30A15C61B77DA0400E5F3F2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B30A15C71B77DA0400E5F3F2 /* Build configuration list for PBXNativeTarget "Virtual TouristTests" */ = {
 			isa = XCConfigurationList;
@@ -421,6 +431,7 @@
 				B30A15C91B77DA0400E5F3F2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
