@@ -15,7 +15,12 @@ extension FlickrClient {
         static let DATA_FORMAT : String = "json"
         static let NO_JSON_CALLBACK : String = "1"
         static let EXTRAS : String = "url_m"
-        static let GET_PHOTOS : String = "flickr.galleries.getPhotos"
+        static let GET_PHOTOS_FOR_LOCATION : String = "flickr.photos.search"
+        static let LAT : String = "44.484748"
+        static let LON : String = "-73.223157"
+        static let PAGE: String = "1"
+        static let PERPAGE : String = "21"
     }
+    
     
 }

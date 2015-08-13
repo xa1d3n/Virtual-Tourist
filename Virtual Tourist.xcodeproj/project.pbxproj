@@ -19,6 +19,7 @@
 		B35EA0FA1B7AEEC0001C45C9 /* FlickrClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35EA0F91B7AEEC0001C45C9 /* FlickrClient.swift */; };
 		B35EA0FC1B7AEEDD001C45C9 /* FlickrConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35EA0FB1B7AEEDD001C45C9 /* FlickrConstants.swift */; };
 		B35EA0FE1B7AEEF1001C45C9 /* FlickrConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35EA0FD1B7AEEF1001C45C9 /* FlickrConvenience.swift */; };
+		B3A8C8DD1B7C42200055C0B5 /* LocationPhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A8C8DC1B7C42200055C0B5 /* LocationPhotos.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		B35EA0F91B7AEEC0001C45C9 /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
 		B35EA0FB1B7AEEDD001C45C9 /* FlickrConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrConstants.swift; sourceTree = "<group>"; };
 		B35EA0FD1B7AEEF1001C45C9 /* FlickrConvenience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrConvenience.swift; sourceTree = "<group>"; };
+		B3A8C8DC1B7C42200055C0B5 /* LocationPhotos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationPhotos.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 				B35EA0F91B7AEEC0001C45C9 /* FlickrClient.swift */,
 				B35EA0FB1B7AEEDD001C45C9 /* FlickrConstants.swift */,
 				B35EA0FD1B7AEEF1001C45C9 /* FlickrConvenience.swift */,
+				B3A8C8DC1B7C42200055C0B5 /* LocationPhotos.swift */,
 			);
 			name = Flickr;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 				B35EA0FA1B7AEEC0001C45C9 /* FlickrClient.swift in Sources */,
 				B30A15AB1B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodeld in Sources */,
 				B30A15A81B77DA0400E5F3F2 /* AppDelegate.swift in Sources */,
+				B3A8C8DD1B7C42200055C0B5 /* LocationPhotos.swift in Sources */,
 				B35EA0FC1B7AEEDD001C45C9 /* FlickrConstants.swift in Sources */,
 				B30A15CD1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift in Sources */,
 			);

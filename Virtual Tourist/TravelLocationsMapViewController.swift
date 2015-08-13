@@ -22,6 +22,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         // add gesture reconginzer to map view
         mapView.addGestureRecognizer(uilpgr)
         
+        FlickrClient.sharedInstance().getPhotosForLocation()
+        
     }
     
     func addPin(gestureRecognizer : UIGestureRecognizer) {
