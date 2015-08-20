@@ -7,20 +7,128 @@
 //
 
 import UIKit
+import MapKit
 
-class PhotoAlbumViewController: UIViewController {
+var photosArr : NSArray!
+
+class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate {
+    @IBOutlet weak var mapView: MKMapView!
+    
+    //let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var longitude : String!
+    var latitude : String!
+    var currPage = 1
+   
+    
+    @IBOutlet weak var collView: UICollectionView!
+    @IBOutlet weak var newCollectionBtn: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+       // getPhotos()
 
         // Do any additional setup after loading the view.
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        
+        
+        setPin()
+        getPhotos()
+        
+    }
+    
+    func setPin() {
+        var lat : CLLocationDegrees = (latitude as NSString).doubleValue
+        var lon : CLLocationDegrees = (longitude as NSString).doubleValue
+        
+        var latDelta : CLLocationDegrees = 0.01
+        var lonDelta : CLLocationDegrees = 0.01
+        
+        var span : MKCoordinateSpan = MKCoordinateSpanMake(latDelta, lonDelta)
+        
+        var location : CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, lon)
+        
+        var region : MKCoordinateRegion = MKCoordinateRegionMake(location, span)
+        
+        mapView.setRegion(region, animated: true)
+        
+        var annotation = MKPointAnnotation()
+        annotation.coordinate = location
+        mapView.addAnnotation(annotation)
+    }
+    
+    func getPhotos() {
+        newCollectionBtn.enabled = false
+        FlickrClient.sharedInstance().getPhotosForLocation(latitude, long: longitude, page: "\(currPage)") { (result, error) -> Void in
+            if error == nil {
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let photos = result {
+                        photosArr = photos.photoUrls
+                        if self.currPage <= photos.pages.integerValue {
+                            self.currPage++
+                        }
+                        else {
+                            self.newCollectionBtn.enabled = false
+                        }
+                    }
+                    self.collView.reloadData()
+                    self.newCollectionBtn.enabled = true
+                })
+            }
+            else {
+                println("error")
+            }
+        }
+    }
+    
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 21
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+         let cell : PhotoCell = collectionView.dequeueReusableCellWithReuseIdentifier("image", forIndexPath: indexPath) as! PhotoCell
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+            if let urlString = photosArr?.objectAtIndex(indexPath.row)["url_m"] as? String {
+                let url = NSURL(string: urlString)
+                let data = NSData(contentsOfURL: url!)
+                
+                
+                let image = UIImage(data: data!)
+                
+                
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                 cell.imageView.image = image
+                })
+            }
+        })
+        
+        return cell
+    }
+    
+    @IBAction func newCollection(sender: UIButton) {
+        getPhotos()
+    }
+    
+    
+    /*func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        
+    } */
 
     /*
     // MARK: - Navigation

@@ -7,11 +7,12 @@
 //
 
 import Foundation
+import MapKit
 
 extension FlickrClient {
     // MARK - GET Convenience Methods
     
-    func getPhotosForLocation() -> Void{
+    func getPhotosForLocation(lat : String, long : String, page: String, completionHandler: (result: LocationPhotos?, error: NSError?) -> Void) {
         
         let methodArguments = [
             "method": Constants.GET_PHOTOS_FOR_LOCATION,
@@ -19,9 +20,9 @@ extension FlickrClient {
             "extras": Constants.EXTRAS,
             "format": Constants.DATA_FORMAT,
             "nojsoncallback": Constants.NO_JSON_CALLBACK,
-            "lat": Constants.LAT,
-            "lon": Constants.LON,
-            "page": Constants.PAGE,
+            "lat": lat,
+            "lon": long,
+            "page": page,
             "per_page": Constants.PERPAGE
         ]
         
@@ -32,7 +33,24 @@ extension FlickrClient {
                 println("error")
             }
             else {
-                println(result.valueForKey("photos") as? NSDictionary )
+                
+                //println(result.valueForKey("photos") as? NSDictionary )
+                if let photoInfo = result as? [NSObject: NSObject] {
+                    //println(photoInfo)
+                    if let photos = photoInfo["photos"] as? NSDictionary {
+                        
+                        let photosInfo = LocationPhotos(dictionary: photos)
+                        completionHandler(result: photosInfo, error: error)
+                       // let photosAll = photos["photo"] as? NSDictionary
+                       // let photoUrl = photosAll["url_m"] as? String
+                        //println(photoUrl)
+                      /*  println(photos["page"])
+                        println(photos["pages"])
+                        println(photos["perpage"])
+                        println(photos["photo"]) */
+                        //let photosInfo = LocationPhotos
+                    }
+                }
             }
         })
     }
