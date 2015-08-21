@@ -134,20 +134,28 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         removeBtn.hidden = false
-        newCollectionBtn.enabled = false
         newCollectionBtn.hidden = true
+        
         indexPaths.append(indexPath)
         var cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell?.layer.borderWidth = 2.0
-        cell?.layer.borderColor = UIColor.redColor().CGColor
+        
+        if cell?.layer.borderWidth == 2.0 {
+            cell?.layer.borderWidth = 0.0
+            
+            var i = 0
+            for index in indexPaths {
+                if index == indexPath {
+                    indexPaths.removeAtIndex(i)
+                }
+                i++
+            }
+        }else {
+            cell?.layer.borderWidth = 2.0
+            cell?.layer.borderColor = UIColor.redColor().CGColor
+            
+            
+        }
     }
-    
-    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-        println(indexPaths)
-    }
-    
-    
-    
     
     @IBAction func newCollection(sender: UIButton) {
         getPhotos()
@@ -156,15 +164,19 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     @IBAction func removePictures(sender: UIButton) {
         //photosArr.removeObject(photosArr.objectAtIndex(0))
+        
+        for index in indexPaths {
+            photosArr.removeObjectAtIndex(index.row)
+        }
         //photosArr.removeObjectsAtIndexes(<#indexes: NSIndexSet#>)
         collView.performBatchUpdates({ () -> Void in
             self.collView.deleteItemsAtIndexPaths(self.indexPaths)
         }, completion: nil)
         
-      /* collView.deleteItemsAtIndexPaths(indexPaths)
-        collView.numberOfItemsInSection(20)
-        collView.reloadData()
-        collView.reloadItemsAtIndexPaths(indexPaths) */
+        indexPaths.removeAll(keepCapacity: false)
+        
+        removeBtn.hidden = true
+        newCollectionBtn.hidden = false
     }
     /*func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         
