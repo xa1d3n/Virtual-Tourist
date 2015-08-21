@@ -136,25 +136,29 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         removeBtn.hidden = false
         newCollectionBtn.hidden = true
         
-        indexPaths.append(indexPath)
+        
         var cell = collectionView.cellForItemAtIndexPath(indexPath)
         
         if cell?.layer.borderWidth == 2.0 {
             cell?.layer.borderWidth = 0.0
             
+           // indexPaths.removeAtIndex(indexPath.row)
+            
             var i = 0
             for index in indexPaths {
                 if index == indexPath {
                     indexPaths.removeAtIndex(i)
+                    break
                 }
                 i++
             }
         }else {
             cell?.layer.borderWidth = 2.0
             cell?.layer.borderColor = UIColor.redColor().CGColor
-            
+            indexPaths.append(indexPath)
             
         }
+        
     }
     
     @IBAction func newCollection(sender: UIButton) {
@@ -165,11 +169,26 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBAction func removePictures(sender: UIButton) {
         //photosArr.removeObject(photosArr.objectAtIndex(0))
         
-        for index in indexPaths {
-            photosArr.removeObjectAtIndex(index.row)
-        }
+        
         //photosArr.removeObjectsAtIndexes(<#indexes: NSIndexSet#>)
         collView.performBatchUpdates({ () -> Void in
+            
+            
+            for index in self.indexPaths {
+                println(photosArr.count)
+                println(index.row)
+                
+                if index.row >= photosArr.count {
+                    photosArr.removeLastObject()
+                }else {
+                    photosArr.removeObjectAtIndex(index.row)
+                }
+                
+                
+                var cell = self.collView.cellForItemAtIndexPath(index)
+                cell?.layer.borderWidth = 0.0
+            }
+            
             self.collView.deleteItemsAtIndexPaths(self.indexPaths)
         }, completion: nil)
         

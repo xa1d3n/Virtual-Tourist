@@ -43,21 +43,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         tap.numberOfTapsRequired = 1
         mapView.addGestureRecognizer(tap)
         
-        
-        
-      //  FlickrClient.sharedInstance().getPhotosForLocation()
-        
-       /* FlickrClient.sharedInstance().getPhotosForLocation { (result, error) -> Void in
-            if let photos = result {
-                println(photos.photoUrls)
-            }
-            else {
-                if error != nil {
-                    println("no phtos:(")
-                }
-            }
-        } */
-        
     }
     
     func resizeMap(makeSmaller : Bool) {
@@ -107,50 +92,56 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     func addPin(gestureRecognizer : UIGestureRecognizer) {
         // get touch location
-
-        let touchPoint = gestureRecognizer.locationInView(self.mapView)
         
-        // get coordinates
-        let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
-        
+        if deletePinsLbl.hidden == true {
+            let touchPoint = gestureRecognizer.locationInView(self.mapView)
+            
+            // get coordinates
+            let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
+            
 
-        var annotation = MKPointAnnotation()
-        annotation.coordinate = newCoordinate
-        mapView.addAnnotation(annotation)
+            var annotation = MKPointAnnotation()
+            annotation.coordinate = newCoordinate
+            mapView.addAnnotation(annotation)
+        }
     }
     
-    func removePin(gestureRecognizer : UITapGestureRecognizer) {
-    
+    func removePin(gesture : UITapGestureRecognizer) {
         if deletePinsLbl.hidden == false {
-        if let selectedPin = mapView.selectedAnnotations?.count  {
-            print("D")
-            //mapView.removeAnnotation(mapView.ann)
+            var viewTst = mapView.hitTest(gesture.locationInView(mapView), withEvent: nil)
             
-            mapView.removeAnnotation(mapView.selectedAnnotations[0] as? MKAnnotation)
+            
+            if (viewTst?.isKindOfClass(MKAnnotationView) == true) {
+                var ann = viewTst as! MKAnnotationView
+                var annotations = [AnyObject]()
+                annotations.append(ann.annotation)
+                mapView.removeAnnotations(annotations)
+            }
         }
-        }
+    }
+    
+    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+        mapView.deselectAnnotation(view.annotation, animated: false)
+        mapView.removeAnnotation(view.annotation)
     }
     
     
     
     // handle pin click
-    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
+
+        
         lat = "\(view.annotation.coordinate.latitude)"
         long = "\(view.annotation.coordinate.longitude)"
+        
         if deletePinsLbl.hidden == true {
             self.performSegueWithIdentifier("showPhotoAlbum", sender: self)
         }
-
-
-        
-        //mapView.annotations.d
-      //  mapView.selectedAnnotations.removeLast()
-        /*if let pin = self.mapView.selectedAnnotations[0] as? MKPointAnnotation {
-            self.mapView.removeAnnotation(pin )
-        } */
-       // mapView.removeAnnotations(mapView.an)
-    //   mapView.annotations.
+        else {
+            mapView.deselectAnnotation(view.annotation, animated: false)
+        }
     }
+    
     
     
    /* override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
