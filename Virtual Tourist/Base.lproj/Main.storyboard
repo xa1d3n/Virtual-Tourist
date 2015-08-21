@@ -97,6 +97,15 @@
                                     <action selector="newCollection:" destination="ziG-wY-PXb" eventType="touchUpInside" id="THA-4Q-gX3"/>
                                 </connections>
                             </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y5k-tf-0gb">
+                                <rect key="frame" x="0.0" y="570" width="600" height="30"/>
+                                <state key="normal" title="Remove Selected Pictures">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="removePictures:" destination="ziG-wY-PXb" eventType="touchUpInside" id="4FG-Hn-Dqs"/>
+                                </connections>
+                            </button>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="8Qa-No-D5w">
                                 <rect key="frame" x="0.0" y="203" width="600" height="368"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="lq9-fF-2Tn">
@@ -139,16 +148,21 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Ltu-e2-2fC" firstAttribute="top" secondItem="J8F-hy-Lbn" secondAttribute="bottom" id="4LG-0O-FaK"/>
+                            <constraint firstItem="Nxj-HS-q41" firstAttribute="top" secondItem="y5k-tf-0gb" secondAttribute="bottom" id="8C7-9r-Ld4"/>
                             <constraint firstAttribute="trailingMargin" secondItem="8Qa-No-D5w" secondAttribute="trailing" constant="-16" id="Ctb-PR-CHZ"/>
+                            <constraint firstItem="y5k-tf-0gb" firstAttribute="top" secondItem="8Qa-No-D5w" secondAttribute="bottom" constant="-1" id="D4K-h3-Tdj"/>
                             <constraint firstItem="T4K-hz-8Mz" firstAttribute="top" secondItem="8Qa-No-D5w" secondAttribute="bottom" constant="-1" id="DWj-oE-hVA"/>
                             <constraint firstItem="8Qa-No-D5w" firstAttribute="leading" secondItem="sah-Ba-un4" secondAttribute="leadingMargin" constant="-16" id="IGW-GW-Gwt"/>
                             <constraint firstItem="8Qa-No-D5w" firstAttribute="top" secondItem="Ltu-e2-2fC" secondAttribute="bottom" constant="-1" id="R3h-it-hTv"/>
                             <constraint firstItem="T4K-hz-8Mz" firstAttribute="top" secondItem="Ltu-e2-2fC" secondAttribute="bottom" constant="366" id="UGF-oK-5Qb"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="y5k-tf-0gb" secondAttribute="trailing" constant="-16" id="XrV-uG-vKa"/>
+                            <constraint firstItem="y5k-tf-0gb" firstAttribute="leading" secondItem="sah-Ba-un4" secondAttribute="leadingMargin" constant="-16" id="aw3-7H-CQN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Ltu-e2-2fC" secondAttribute="trailing" constant="-16" id="cd6-m6-3Zf"/>
                             <constraint firstItem="Ltu-e2-2fC" firstAttribute="leading" secondItem="sah-Ba-un4" secondAttribute="leadingMargin" constant="-16" id="f8H-u3-49l"/>
                             <constraint firstItem="Nxj-HS-q41" firstAttribute="top" secondItem="8Qa-No-D5w" secondAttribute="bottom" constant="29" id="kIh-y4-tJd"/>
                             <constraint firstItem="8Qa-No-D5w" firstAttribute="top" secondItem="J8F-hy-Lbn" secondAttribute="bottom" constant="139" id="lUe-La-BOX"/>
                             <constraint firstItem="T4K-hz-8Mz" firstAttribute="leading" secondItem="sah-Ba-un4" secondAttribute="leadingMargin" constant="-16" id="mjx-e6-jeJ"/>
+                            <constraint firstItem="y5k-tf-0gb" firstAttribute="top" secondItem="Ltu-e2-2fC" secondAttribute="bottom" constant="366" id="paK-4M-AYo"/>
                             <constraint firstItem="Nxj-HS-q41" firstAttribute="top" secondItem="T4K-hz-8Mz" secondAttribute="bottom" id="pzb-lW-Hyj"/>
                             <constraint firstAttribute="trailingMargin" secondItem="T4K-hz-8Mz" secondAttribute="trailing" constant="-16" id="rk3-C7-4K0"/>
                         </constraints>
@@ -158,6 +172,7 @@
                         <outlet property="collView" destination="8Qa-No-D5w" id="I0Y-v2-hJz"/>
                         <outlet property="mapView" destination="Ltu-e2-2fC" id="CaK-5J-4LV"/>
                         <outlet property="newCollectionBtn" destination="T4K-hz-8Mz" id="vjm-eG-KOt"/>
+                        <outlet property="removeBtn" destination="y5k-tf-0gb" id="eR8-gC-22F"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t4m-Bn-cOk" userLabel="First Responder" sceneMemberID="firstResponder"/>

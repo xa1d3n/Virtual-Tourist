@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-var photosArr : NSArray!
+var photosArr : NSMutableArray!
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
@@ -18,11 +18,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     var longitude : String!
     var latitude : String!
     var currPage = 1
+    
+    var indexPaths = [NSIndexPath]()
    
     
     @IBOutlet weak var collView: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
 
+    @IBOutlet weak var removeBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -70,8 +73,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             if error == nil {
                 dispatch_async(dispatch_get_main_queue(), {
                     if let photos = result {
-                        photosArr = photos.photoUrls
-                        if self.currPage <= photos.pages.integerValue {
+                        photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
+                        if self.currPage <= photosArr.count {
                             self.currPage++
                         }
                         else {
@@ -96,14 +99,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 21
+        println(photosArr?.count)
+        
+        var items = 5
+        
+        if let photoCount = photosArr?.count {
+            items = photoCount
+        }
+        
+        return items
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
          let cell : PhotoCell = collectionView.dequeueReusableCellWithReuseIdentifier("image", forIndexPath: indexPath) as! PhotoCell
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-            if let urlString = photosArr?.objectAtIndex(indexPath.row)["url_m"] as? String {
+            if let urlString = photosArr?.objectAtIndex(indexPath.row)["url_m"]  as? String {
                 let url = NSURL(string: urlString)
                 let data = NSData(contentsOfURL: url!)
                 
@@ -121,11 +132,40 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         return cell
     }
     
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        removeBtn.hidden = false
+        newCollectionBtn.enabled = false
+        newCollectionBtn.hidden = true
+        indexPaths.append(indexPath)
+        var cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.layer.borderWidth = 2.0
+        cell?.layer.borderColor = UIColor.redColor().CGColor
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        println(indexPaths)
+    }
+    
+    
+    
+    
     @IBAction func newCollection(sender: UIButton) {
         getPhotos()
     }
     
     
+    @IBAction func removePictures(sender: UIButton) {
+        //photosArr.removeObject(photosArr.objectAtIndex(0))
+        //photosArr.removeObjectsAtIndexes(<#indexes: NSIndexSet#>)
+        collView.performBatchUpdates({ () -> Void in
+            self.collView.deleteItemsAtIndexPaths(self.indexPaths)
+        }, completion: nil)
+        
+      /* collView.deleteItemsAtIndexPaths(indexPaths)
+        collView.numberOfItemsInSection(20)
+        collView.reloadData()
+        collView.reloadItemsAtIndexPaths(indexPaths) */
+    }
     /*func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         
     } */
