@@ -10,27 +10,41 @@ import Foundation
 import UIKit
 
 struct PhotoLocations {
-    var photos : LocationPhotos!
     
-    
-   /* static func getLocations()  {
-        FlickrClient.sharedInstance().getPhotosForLocation(lat: String, long: String) { (result, error) -> Void in
-            if let photos = result {
-                dispatch_async(dispatch_get_main_queue(), {
-                   
-                    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-                    //println(photos.perpage)
-                    appDelegate.photosInfo = photos
-                   // println(appDelegate.photosInfo.perpage)
+   /* static func getLocations(latitude: String, longitude: String, currPage: Int) -> NSMutableArray {
+        var photosArr : NSMutableArray!
+        FlickrClient.sharedInstance().getPhotosForLocation(latitude, long: longitude, page: "\(currPage)") { (result, error) -> Void in
+            if error == nil {
+                    
+                    if let photos = result {
+                        photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
+                    }
 
-                })
             }
             else {
-                if error != nil {
-                println("no phtos:(")
-                }
+                println("error")
             }
         }
-        
+        return photosArr
     } */
+    
+    static func getLocations(latitude: String, longitude: String, currPage: Int) {
+
+        FlickrClient.sharedInstance().getPhotosForLocation(latitude, long: longitude, page: "\(currPage)") { (result, error) -> Void in
+            if error == nil {
+                
+                if let photos = result {
+                    dispatch_async(dispatch_get_main_queue(), {
+                    var photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
+                    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                    appDelegate.photoUrls = photosArr
+                    })
+                }
+                
+            }
+            else {
+                println("error")
+            }
+        }
+    }
 }

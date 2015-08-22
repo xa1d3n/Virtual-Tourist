@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-var photosArr : NSMutableArray!
+
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
@@ -19,6 +19,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     var latitude : String!
     var currPage = 1
     
+    var photosArr : NSMutableArray!
     var indexPaths = [NSIndexPath]()
    
     
@@ -29,10 +30,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var removeBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-       // getPhotos()
-
-        // Do any additional setup after loading the view.
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -42,9 +39,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
         
-        
         setPin()
         getPhotos()
+        //self.setupButtons()
         
     }
     
@@ -68,6 +65,20 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         mapView.addAnnotation(annotation)
     }
     
+    func setupButtons() {
+        if self.photosArr?.count > 0 {
+            self.noImagesLbl.hidden = true
+            self.collView.hidden = false
+            self.newCollectionBtn.enabled = true
+            currPage++
+        }
+        else {
+            self.noImagesLbl.hidden = false
+            self.collView.hidden = true
+            self.newCollectionBtn.enabled = false
+        }
+    }
+    
     func getPhotos() {
         newCollectionBtn.enabled = false
         
@@ -81,15 +92,15 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             if error == nil {
                 dispatch_async(dispatch_get_main_queue(), {
                     if let photos = result {
-                        photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
-                        if self.currPage <= photosArr.count {
+                        self.photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
+                        if self.currPage <= self.photosArr.count {
                             self.currPage++
                         }
                         else {
                             self.newCollectionBtn.enabled = false
                         }
                     }
-                    if photosArr.count > 0 {
+                    if self.photosArr.count > 0 {
                         self.noImagesLbl.hidden = true
                         self.collView.hidden = false
                         self.collView.reloadData()
@@ -117,13 +128,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        println(photosArr?.count)
         
         var items = 1
         
-        if let photoCount = photosArr?.count {
+       if let photoCount = photosArr?.count {
             items = photoCount
         }
+        
         
         return items
     }
@@ -132,7 +143,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
          let cell : PhotoCell = collectionView.dequeueReusableCellWithReuseIdentifier("image", forIndexPath: indexPath) as! PhotoCell
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-            if let urlString = photosArr?.objectAtIndex(indexPath.row)["url_m"]  as? String {
+            if let urlString = self.photosArr?.objectAtIndex(indexPath.row)["url_m"]  as? String {
                 let url = NSURL(string: urlString)
                 let data = NSData(contentsOfURL: url!)
                 
@@ -199,13 +210,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             
             for index in self.indexPaths {
-                println(photosArr.count)
+                println(self.photosArr.count)
                 println(index.row)
                 
-                if index.row >= photosArr.count {
-                    photosArr.removeLastObject()
+                if index.row >= self.photosArr.count {
+                    self.photosArr.removeLastObject()
                 }else {
-                    photosArr.removeObjectAtIndex(index.row)
+                    self.photosArr.removeObjectAtIndex(index.row)
                 }
                 
                 

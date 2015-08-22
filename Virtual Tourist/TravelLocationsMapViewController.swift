@@ -100,6 +100,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             var annotation = MKPointAnnotation()
             annotation.coordinate = newCoordinate
             mapView.addAnnotation(annotation)
+            println("\(annotation.coordinate.longitude)")
+            println("\(annotation.coordinate.latitude)")
+            
+           // PhotoLocations.getLocations("\(annotation.coordinate.latitude)", longitude: "\(annotation.coordinate.longitude)", currPage: 1)
         }
     }
     
@@ -195,7 +199,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             
             secondViewController.latitude = lat
             secondViewController.longitude = long
-            
             
         }
     }
