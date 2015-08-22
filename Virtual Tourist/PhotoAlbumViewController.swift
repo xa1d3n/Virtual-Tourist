@@ -25,6 +25,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var collView: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
 
+    @IBOutlet weak var noImagesLbl: UILabel!
     @IBOutlet weak var removeBtn: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,6 +70,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     func getPhotos() {
         newCollectionBtn.enabled = false
+        
+        var spinner = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
+        spinner.center = view.center
+        spinner.hidesWhenStopped = true
+        spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        view.addSubview(spinner)
+        spinner.startAnimating()
         FlickrClient.sharedInstance().getPhotosForLocation(latitude, long: longitude, page: "\(currPage)") { (result, error) -> Void in
             if error == nil {
                 dispatch_async(dispatch_get_main_queue(), {
@@ -81,8 +89,18 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                             self.newCollectionBtn.enabled = false
                         }
                     }
-                    self.collView.reloadData()
-                    self.newCollectionBtn.enabled = true
+                    if photosArr.count > 0 {
+                        self.noImagesLbl.hidden = true
+                        self.collView.hidden = false
+                        self.collView.reloadData()
+                        spinner.stopAnimating()
+                        self.newCollectionBtn.enabled = true
+                    }
+                    else {
+                        self.noImagesLbl.hidden = false
+                        self.collView.hidden = true
+                        self.newCollectionBtn.enabled = false
+                    }
                 })
             }
             else {
@@ -101,7 +119,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         println(photosArr?.count)
         
-        var items = 5
+        var items = 1
         
         if let photoCount = photosArr?.count {
             items = photoCount
@@ -137,26 +155,32 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         newCollectionBtn.hidden = true
         
         
-        var cell = collectionView.cellForItemAtIndexPath(indexPath)
+        var cell = collView.cellForItemAtIndexPath(indexPath)
         
-        if cell?.layer.borderWidth == 2.0 {
-            cell?.layer.borderWidth = 0.0
-            
-           // indexPaths.removeAtIndex(indexPath.row)
-            
-            var i = 0
-            for index in indexPaths {
-                if index == indexPath {
-                    indexPaths.removeAtIndex(i)
-                    break
-                }
-                i++
+        var isSelected = false
+        
+        var i = 0
+        for index in indexPaths {
+            if index == indexPath {
+                indexPaths.removeAtIndex(i)
+                isSelected = true
+                break
             }
-        }else {
+            i++
+        }
+        
+        if isSelected {
+            cell?.layer.borderWidth = 0.0
+            if indexPaths.count < 1 {
+                removeBtn.hidden = true
+                newCollectionBtn.hidden = false
+            }
+        }
+        else {
             cell?.layer.borderWidth = 2.0
             cell?.layer.borderColor = UIColor.redColor().CGColor
             indexPaths.append(indexPath)
-            
+            println("applied Color")
         }
         
     }

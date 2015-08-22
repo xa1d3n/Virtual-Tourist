@@ -1,9 +1,8 @@
 {
   "images" : [
     {
-      "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "VirtualTourist_152.png",
+      "size" : "40x40",
       "scale" : "2x"
     }
   ],

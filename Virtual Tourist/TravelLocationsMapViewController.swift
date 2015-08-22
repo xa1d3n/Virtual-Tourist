@@ -30,12 +30,13 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         editButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
         doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: "done")
         
+        
         self.navigationItem.rightBarButtonItem = editButton
 
         
         // add pin
         uilpgr = UILongPressGestureRecognizer(target: self, action: "addPin:")
-        uilpgr.minimumPressDuration = 1.0
+        uilpgr.minimumPressDuration = 0.5
         // add gesture reconginzer to map view
         mapView.addGestureRecognizer(uilpgr)
         
@@ -84,10 +85,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     func done() {
         resizeMap(false)
         self.navigationItem.rightBarButtonItem = editButton
-
-        
-
-     //   hideTapLabel()
     }
     
     func addPin(gestureRecognizer : UIGestureRecognizer) {
@@ -108,28 +105,39 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     func removePin(gesture : UITapGestureRecognizer) {
         if deletePinsLbl.hidden == false {
+            println("deleting")
             var viewTst = mapView.hitTest(gesture.locationInView(mapView), withEvent: nil)
             
             
             if (viewTst?.isKindOfClass(MKAnnotationView) == true) {
                 var ann = viewTst as! MKAnnotationView
                 var annotations = [AnyObject]()
-                annotations.append(ann.annotation)
-                mapView.removeAnnotations(annotations)
+                if let annotation = ann.annotation {
+                    mapView.deselectAnnotation(annotation, animated: false)
+                    annotations.append(annotation)
+                    mapView.removeAnnotations(annotations)
+                }
+                
             }
         }
     }
     
+    
+    
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-        mapView.deselectAnnotation(view.annotation, animated: false)
-        mapView.removeAnnotation(view.annotation)
+        println("Deselected")
+        if deletePinsLbl.hidden == false {
+            mapView.deselectAnnotation(view.annotation, animated: false)
+            mapView.removeAnnotation(view.annotation)
+        }
     }
+    
     
     
     
     // handle pin click
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-
+        println("selected pin")
         
         lat = "\(view.annotation.coordinate.latitude)"
         long = "\(view.annotation.coordinate.longitude)"
@@ -142,15 +150,44 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    
-    
-   /* override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
-        if (segue.identifier = "MainToTimer") {
-            let secondViewController = segue.destinationViewController as YourSecondViewController
-            let duration = sender as Double
-            secondViewController.duration = duration
+    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+        if annotation is MKPointAnnotation {
+            let pinAnnotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "myPin")
+            pinAnnotationView.pinColor = .Red
+            pinAnnotationView.animatesDrop = true
+            pinAnnotationView.draggable = true
+            
+
+            
+            return pinAnnotationView
         }
-    } */
+        return nil
+    }
+    
+    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        println("DF")
+        
+        if newState == MKAnnotationViewDragState.Dragging {
+            println("draggin it")
+
+        }
+        
+        if newState == MKAnnotationViewDragState.Ending {
+            //update pin location
+            /*if let customAnnot = view.annotation as? myAnnotation {
+                cData.updatePinLocation(customAnnot.pinID, newValue: customAnnot.coordinate)
+            } */
+            
+            
+
+            
+        }
+        
+        if newState == MKAnnotationViewDragState.Starting {
+            println("start drag")
+
+        }
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if (segue.identifier == "showPhotoAlbum") {
