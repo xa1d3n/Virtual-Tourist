@@ -39,30 +39,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
         
-        setPin()
+       // setPin()
+        HelperFunctions.setPin(self.mapView, latitude: latitude, longitude: longitude, shouldZoomIn:true)
         getPhotos()
         //self.setupButtons()
         
-    }
-    
-    func setPin() {
-        var lat : CLLocationDegrees = (latitude as NSString).doubleValue
-        var lon : CLLocationDegrees = (longitude as NSString).doubleValue
-        
-        var latDelta : CLLocationDegrees = 0.01
-        var lonDelta : CLLocationDegrees = 0.01
-        
-        var span : MKCoordinateSpan = MKCoordinateSpanMake(latDelta, lonDelta)
-        
-        var location : CLLocationCoordinate2D = CLLocationCoordinate2DMake(lat, lon)
-        
-        var region : MKCoordinateRegion = MKCoordinateRegionMake(location, span)
-        
-        mapView.setRegion(region, animated: true)
-        
-        var annotation = MKPointAnnotation()
-        annotation.coordinate = location
-        mapView.addAnnotation(annotation)
     }
     
     func setupButtons() {

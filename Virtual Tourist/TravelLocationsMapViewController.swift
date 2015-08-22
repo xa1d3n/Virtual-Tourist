@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
 
@@ -16,6 +17,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     var editButton : UIBarButtonItem!
     var doneButton : UIBarButtonItem!
     var uilpgr : UILongPressGestureRecognizer!
+    let appDel : AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
     
     var lat : String!
     var long : String!
@@ -25,7 +28,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        getPinsFromCoreData()
         // add edit and done buttons to nav bar
         editButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
         doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: "done")
@@ -44,6 +47,27 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         tap.numberOfTapsRequired = 1
         mapView.addGestureRecognizer(tap)
         
+    }
+    
+    func getPinsFromCoreData() {
+        let request = NSFetchRequest(entityName: "Pin")
+        request.returnsObjectsAsFaults = false
+        
+        let results = appDel.managedObjectContext?.executeFetchRequest(request, error: nil)
+        
+        if results?.count > 0 {
+            for result : AnyObject in results! {
+                println(result.valueForKey("latitude"))
+                println(result.valueForKey("longitude"))
+                
+                //"\(view.annotation.coordinate.latitude)"
+               // let lat = "\(result.valueForKey("latitude"))"
+                
+               HelperFunctions.setPin(self.mapView, latitude: result.valueForKey("latitude") as! String, longitude: result.valueForKey("longitude") as! String, shouldZoomIn: false)
+            }
+        }else {
+            println("no data")
+        }
     }
     
     func resizeMap(makeSmaller : Bool) {
@@ -95,17 +119,27 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             
             // get coordinates
             let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
-            
+            println(newCoordinate)
 
             var annotation = MKPointAnnotation()
             annotation.coordinate = newCoordinate
             mapView.addAnnotation(annotation)
-            println("\(annotation.coordinate.longitude)")
-            println("\(annotation.coordinate.latitude)")
+          //  println("\(annotation.coordinate.longitude)")
+            //println("\(annotation.coordinate.latitude)")
             
-           // PhotoLocations.getLocations("\(annotation.coordinate.latitude)", longitude: "\(annotation.coordinate.longitude)", currPage: 1)
+            let context = appDel.managedObjectContext
+            
+            var newPin = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context!) as! NSManagedObject
+            
+            // specify attributes
+            newPin.setValue("\(annotation.coordinate.latitude)", forKey: "latitude")
+            newPin.setValue("\(annotation.coordinate.longitude)", forKey: "longitude")
+            
+            context?.save(nil)
+
         }
     }
+    
     
     func removePin(gesture : UITapGestureRecognizer) {
         if deletePinsLbl.hidden == false {
