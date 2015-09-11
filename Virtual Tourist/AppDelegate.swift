@@ -20,6 +20,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+       /* if let context = self.managedObjectContext {
+            let dataHelper = DataHelper(context: context)
+            
+            //dataHelper.printAllZoos()
+            //dataHelper.printAllClassifications()
+            dataHelper.printAllAnimals()
+        } */
+
+        
         return true
     }
 

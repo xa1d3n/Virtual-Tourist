@@ -18,6 +18,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     var longitude : String!
     var latitude : String!
     var currPage = 1
+    var photosFromCoreData : Set<NSObject>?
     
     var photosArr : NSMutableArray!
     var indexPaths = [NSIndexPath]()
@@ -41,8 +42,34 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
        // setPin()
         HelperFunctions.setPin(self.mapView, latitude: latitude, longitude: longitude, shouldZoomIn:true)
-        getPhotos()
+        
+        if let photos = photosFromCoreData {
+           // getPhotosFromCoreData(photos)
+        }
+        else {
+            getPhotos()
+        }
         //self.setupButtons()
+        
+    }
+    
+    func getPhotosFromCoreData(photos: Set<NSObject>) {
+        for photo in photos {
+            if let photo = photo as? Photo {
+                var documentsDir : String?
+                
+                var paths : [AnyObject] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
+                
+                if paths.count > 0 {
+                    documentsDir = paths[0] as? String
+                    
+                    let savePath = documentsDir! + "/\(photo.id).jpg"
+                    var img = UIImage(named: savePath)
+                    println(img)
+                }
+
+            }
+        }
         
     }
     
@@ -61,6 +88,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     func getPhotos() {
+        photosFromCoreData?.removeAll(keepCapacity: true)
         newCollectionBtn.enabled = false
         
         var spinner = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
@@ -111,10 +139,21 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         var items = 1
-        
-       if let photoCount = photosArr?.count {
-            items = photoCount
+    
+        if let photosCoreData = photosFromCoreData?.count {
+            if photosCoreData > 0 {
+                items = photosCoreData
+            }
+            else if let photoCount = photosArr?.count {
+                items = photoCount
+            }
+
+            
         }
+       else if let photoCount = photosArr?.count {
+            items = photoCount
+       }
+       
         
         
         return items
@@ -123,21 +162,46 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
          let cell : PhotoCell = collectionView.dequeueReusableCellWithReuseIdentifier("image", forIndexPath: indexPath) as! PhotoCell
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-            if let urlString = self.photosArr?.objectAtIndex(indexPath.row)["url_m"]  as? String {
-                let url = NSURL(string: urlString)
-                let data = NSData(contentsOfURL: url!)
-                
-                
-                let image = UIImage(data: data!)
-                
-                
-                
-                dispatch_async(dispatch_get_main_queue(), {
-                 cell.imageView.image = image
-                })
+        if photosFromCoreData?.count > 0 {
+            
+        
+        if let photosCoreData = photosFromCoreData as? Set<Photo> {
+            let photos = Array(photosCoreData)
+            let photoId = photos[indexPath.row].id!
+            
+            var documentsDir : String?
+            
+            var paths : [AnyObject] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
+            
+            if paths.count > 0 {
+                documentsDir = paths[0] as? String
+                //let savePath = documentsDir! + "/\(idNum).jpg"
+                let savePath = documentsDir! + "/\(photoId).jpg"
+                var img = UIImage(named: savePath)
+                cell.imageView.image = img
             }
-        })
+
+            
+            }
+
+        }
+        else {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+                if let urlString = self.photosArr?.objectAtIndex(indexPath.row)["url_m"]  as? String {
+                    let url = NSURL(string: urlString)
+                    let data = NSData(contentsOfURL: url!)
+                    
+                    
+                    let image = UIImage(data: data!)
+                    
+                    
+                    
+                    dispatch_async(dispatch_get_main_queue(), {
+                     cell.imageView.image = image
+                    })
+                }
+            })
+        }
         
         return cell
     }

@@ -47,6 +47,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         tap.numberOfTapsRequired = 1
         mapView.addGestureRecognizer(tap)
         
+        
     }
     
     func addPinsToMapFromCoreData() {
@@ -55,8 +56,19 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         if results.count > 0 {
             for result : AnyObject in results {
+                //println(result.valueForKey("photos") as! _NSFaultingMutableSet!)
+                //println(result.photos)
+               // let photos = result.photos as! [Photo]
+             //   println(result.latitude)
+               // result.getPh
+               // println(photos)
                 
-                 HelperFunctions.setPin(self.mapView, latitude: result.valueForKey("latitude") as! String, longitude: result.valueForKey("longitude") as! String, shouldZoomIn: false)
+                
+                if let lat = result.valueForKey("latitude") as? String {
+                    HelperFunctions.setPin(self.mapView, latitude: lat, longitude: result.valueForKey("longitude") as! String, shouldZoomIn: false)
+                }
+                
+                
             }
         }else {
             println("no data")
@@ -73,6 +85,29 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         results = appDel.managedObjectContext?.executeFetchRequest(request, error: nil)
         
         return results!
+    }
+    
+    func getPhotosFromCoreData(latitude: String, longitude: String) -> Set<NSObject> {
+        let request = NSFetchRequest(entityName: "Pin")
+        request.returnsObjectsAsFaults = false
+        
+        let latPred = NSPredicate(format: "latitude = %@", latitude)
+        let longPred = NSPredicate(format: "longitude = %@", longitude)
+        
+        var compound = NSCompoundPredicate.andPredicateWithSubpredicates([latPred, longPred])
+        request.predicate = compound
+        
+        var results : [Pin]
+        
+        results = appDel.managedObjectContext?.executeFetchRequest(request, error: nil) as! [Pin]
+        
+        return results[0].photos
+        
+        /*
+        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [LogItem] {
+            logItems = fetchResults
+        }*/
+       // return results.
     }
     
     func resizeMap(makeSmaller : Bool) {
@@ -129,18 +164,32 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             var annotation = MKPointAnnotation()
             annotation.coordinate = newCoordinate
             mapView.addAnnotation(annotation)
+            
+            
+            let latt = "\(annotation.coordinate.latitude)" as String
+            let longg = "\(annotation.coordinate.longitude)" as String
+
+            PhotoLocations.getLocations(latt, longitude: longg, currPage: 1)
           //  println("\(annotation.coordinate.longitude)")
             //println("\(annotation.coordinate.latitude)")
             
-            let context = appDel.managedObjectContext
+          /*  let context = appDel.managedObjectContext
             
             var newPin = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context!) as! NSManagedObject
             
             // specify attributes
-            newPin.setValue("\(annotation.coordinate.latitude)", forKey: "latitude")
-            newPin.setValue("\(annotation.coordinate.longitude)", forKey: "longitude")
             
-            context?.save(nil)
+            let latt = "\(annotation.coordinate.latitude)" as String
+            let longg = "\(annotation.coordinate.longitude)" as String
+            
+            PhotoLocations.getLocations(latt, longitude: longg, currPage: 1)
+            
+          //  println(appDel.photoUrls)
+            
+            newPin.setValue(latt, forKey: "latitude")
+            newPin.setValue(longg, forKey: "longitude")
+            
+            context?.save(nil) */
 
         }
     }
@@ -160,6 +209,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                     annotations.append(annotation)
                     mapView.removeAnnotations(annotations)
                     
+                    removePinsFromCoreData("\(annotation.coordinate.latitude)", longitude: "\(annotation.coordinate.longitude)")
+                    
                     
                 }
                 
@@ -172,14 +223,18 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         if results.count > 0 {
             for result : AnyObject in results {
-                let latt : String =  result.valueForKey("latitude") as! String
-                let longg : String =  result.valueForKey("longitude") as! String
-                
-               if latt == latitude && longitude == longg {
-                    appDel.managedObjectContext?.deleteObject(result as! NSManagedObject)
-                    println("deleted object")
+                if let latt : String =  result.valueForKey("latitude") as? String {
+                    let longg : String =  result.valueForKey("longitude") as! String
+                    
+                    if latt == latitude && longitude == longg {
+                        appDel.managedObjectContext?.deleteObject(result as! NSManagedObject)
+                        
+                        println("deleted object")
+                    }
+                    appDel.managedObjectContext?.save(nil)
+                    
                 }
-                appDel.managedObjectContext?.save(nil)
+
             }
         }
         
@@ -190,7 +245,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
         println("Deselected")
         if deletePinsLbl.hidden == false {
-            removePinsFromCoreData("\(view.annotation.coordinate.latitude)", longitude: "\(view.annotation.coordinate.longitude)")
+          //  removePinsFromCoreData("\(view.annotation.coordinate.latitude)", longitude: "\(view.annotation.coordinate.longitude)")
             mapView.deselectAnnotation(view.annotation, animated: false)
             mapView.removeAnnotation(view.annotation)
             
@@ -207,12 +262,16 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         lat = "\(view.annotation.coordinate.latitude)"
         long = "\(view.annotation.coordinate.longitude)"
         
-       /* if deletePinsLbl.hidden == true {
+        
+        
+        //println(self.getPhotosFromCoreData(lat, longitude: long).count)
+        
+        if deletePinsLbl.hidden == true {
             self.performSegueWithIdentifier("showPhotoAlbum", sender: self)
         }
         else {
             mapView.deselectAnnotation(view.annotation, animated: false)
-        } */
+        }
     }
     
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
@@ -230,33 +289,40 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        println("DF")
         
-        var startingLat = "\(view.annotation.coordinate.latitude)"
-        var startingLong = "\(view.annotation.coordinate.longitude)"
+        var startAnn : MKAnnotation!
         
+     //   var startingLat : String = ""
+       // var startingLong = "\(view.annotation.coordinate.longitude)"
+        println("start drag\(view.annotation.coordinate.latitude)")
         if newState == MKAnnotationViewDragState.Dragging {
             println("draggin it")
 
         }
         
         if newState == MKAnnotationViewDragState.Ending {
+            println(startAnn.coordinate.latitude)
+          //  println("end drag\(view.annotation.coordinate.latitude)")
             //update pin location
             /*if let customAnnot = view.annotation as? myAnnotation {
                 cData.updatePinLocation(customAnnot.pinID, newValue: customAnnot.coordinate)
             } */
-            println(startingLat)
+            //println(startingLat)
            // println(startingLong)
             //updatePinFromCoreData(startingLat, startingLong: startingLong, endingLat: "\(view.annotation.coordinate.latitude)", endingLong: "\(view.annotation.coordinate.longitude)")
 
             
         }
         
+
+        
         if newState == MKAnnotationViewDragState.Starting {
-            println("start drag")
-            println("\(view.annotation.coordinate.latitude)")
-            startingLat = "\(view.annotation.coordinate.latitude)"
-            startingLong = "\(view.annotation.coordinate.longitude)"
+            startAnn = view.annotation
+            println(startAnn.coordinate.latitude)
+           // println("start drag")
+            //println("\(view.annotation.coordinate.latitude)")
+            //startingLat = "\(view.annotation.coordinate.latitude)"
+            //startingLong = "\(view.annotation.coordinate.longitude)"
         }
     }
     
@@ -284,6 +350,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         if (segue.identifier == "showPhotoAlbum") {
             let secondViewController : PhotoAlbumViewController = segue.destinationViewController as! PhotoAlbumViewController
             
+           // let phtos = self.getPhotosFromCoreData(lat, longitude: long)[0]
+            //println(self.getPhotosFromCoreData(lat, longitude: long).count)
+            
+            secondViewController.photosFromCoreData = self.getPhotosFromCoreData(lat, longitude: long) as? Set<NSObject>
             secondViewController.latitude = lat
             secondViewController.longitude = long
             
