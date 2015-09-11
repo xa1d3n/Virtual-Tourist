@@ -41,14 +41,6 @@ extension FlickrClient {
                         
                         let photosInfo = LocationPhotos(dictionary: photos)
                         completionHandler(result: photosInfo, error: error)
-                       // let photosAll = photos["photo"] as? NSDictionary
-                       // let photoUrl = photosAll["url_m"] as? String
-                        //println(photoUrl)
-                      /*  println(photos["page"])
-                        println(photos["pages"])
-                        println(photos["perpage"])
-                        println(photos["photo"]) */
-                        //let photosInfo = LocationPhotos
                     }
                 }
             }

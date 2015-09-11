@@ -16,6 +16,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     var editButton : UIBarButtonItem!
     var doneButton : UIBarButtonItem!
+    var selectedPin : Pin?
     var uilpgr : UILongPressGestureRecognizer!
     let appDel : AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
@@ -56,13 +57,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         if results.count > 0 {
             for result : AnyObject in results {
-                //println(result.valueForKey("photos") as! _NSFaultingMutableSet!)
-                //println(result.photos)
-               // let photos = result.photos as! [Photo]
-             //   println(result.latitude)
-               // result.getPh
-               // println(photos)
-                
                 
                 if let lat = result.valueForKey("latitude") as? String {
                     HelperFunctions.setPin(self.mapView, latitude: lat, longitude: result.valueForKey("longitude") as! String, shouldZoomIn: false)
@@ -101,13 +95,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         results = appDel.managedObjectContext?.executeFetchRequest(request, error: nil) as! [Pin]
         
-        return results[0].photos
+        selectedPin = results[0] as? Pin
         
-        /*
-        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [LogItem] {
-            logItems = fetchResults
-        }*/
-       // return results.
+        
+        return results[0].photos
     }
     
     func resizeMap(makeSmaller : Bool) {
@@ -159,7 +150,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             
             // get coordinates
             let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
-            println(newCoordinate)
 
             var annotation = MKPointAnnotation()
             annotation.coordinate = newCoordinate
@@ -170,26 +160,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             let longg = "\(annotation.coordinate.longitude)" as String
 
             PhotoLocations.getLocations(latt, longitude: longg, currPage: 1)
-          //  println("\(annotation.coordinate.longitude)")
-            //println("\(annotation.coordinate.latitude)")
-            
-          /*  let context = appDel.managedObjectContext
-            
-            var newPin = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context!) as! NSManagedObject
-            
-            // specify attributes
-            
-            let latt = "\(annotation.coordinate.latitude)" as String
-            let longg = "\(annotation.coordinate.longitude)" as String
-            
-            PhotoLocations.getLocations(latt, longitude: longg, currPage: 1)
-            
-          //  println(appDel.photoUrls)
-            
-            newPin.setValue(latt, forKey: "latitude")
-            newPin.setValue(longg, forKey: "longitude")
-            
-            context?.save(nil) */
 
         }
     }
@@ -243,9 +213,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-        println("Deselected")
         if deletePinsLbl.hidden == false {
-          //  removePinsFromCoreData("\(view.annotation.coordinate.latitude)", longitude: "\(view.annotation.coordinate.longitude)")
             mapView.deselectAnnotation(view.annotation, animated: false)
             mapView.removeAnnotation(view.annotation)
             
@@ -257,14 +225,9 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     // handle pin click
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-        println("selected pin")
         
         lat = "\(view.annotation.coordinate.latitude)"
         long = "\(view.annotation.coordinate.longitude)"
-        
-        
-        
-        //println(self.getPhotosFromCoreData(lat, longitude: long).count)
         
         if deletePinsLbl.hidden == true {
             self.performSegueWithIdentifier("showPhotoAlbum", sender: self)
@@ -291,12 +254,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         
         var startAnn : MKAnnotation!
-        
-     //   var startingLat : String = ""
-       // var startingLong = "\(view.annotation.coordinate.longitude)"
-        println("start drag\(view.annotation.coordinate.latitude)")
+    
         if newState == MKAnnotationViewDragState.Dragging {
-            println("draggin it")
 
         }
         
@@ -318,11 +277,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         if newState == MKAnnotationViewDragState.Starting {
             startAnn = view.annotation
-            println(startAnn.coordinate.latitude)
-           // println("start drag")
-            //println("\(view.annotation.coordinate.latitude)")
-            //startingLat = "\(view.annotation.coordinate.latitude)"
-            //startingLong = "\(view.annotation.coordinate.longitude)"
         }
     }
     
@@ -339,7 +293,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                     
                     result.setValue(endingLat, forKey: latt)
                     result.setValue(endingLong, forKey: longg)
-                    println("updated location")
                 }
                 appDel.managedObjectContext?.save(nil)
             }
@@ -350,12 +303,12 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         if (segue.identifier == "showPhotoAlbum") {
             let secondViewController : PhotoAlbumViewController = segue.destinationViewController as! PhotoAlbumViewController
             
-           // let phtos = self.getPhotosFromCoreData(lat, longitude: long)[0]
-            //println(self.getPhotosFromCoreData(lat, longitude: long).count)
-            
-            secondViewController.photosFromCoreData = self.getPhotosFromCoreData(lat, longitude: long) as? Set<NSObject>
+            let photos = self.getPhotosFromCoreData(lat, longitude: long) as? Set<Photo>
+            let photosArray = Array(photos!)
+            secondViewController.photosFromCoreData = photosArray
             secondViewController.latitude = lat
             secondViewController.longitude = long
+            secondViewController.pin = selectedPin
             
         }
     }

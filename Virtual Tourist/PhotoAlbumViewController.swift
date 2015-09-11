@@ -14,14 +14,17 @@ import MapKit
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
     
-    //let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var longitude : String!
     var latitude : String!
     var currPage = 1
-    var photosFromCoreData : Set<NSObject>?
+    var photosFromCoreData : Array<Photo>?
+    
+    let appDel : AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     var photosArr : NSMutableArray!
     var indexPaths = [NSIndexPath]()
+    
+    var pin : Pin?
    
     
     @IBOutlet weak var collView: UICollectionView!
@@ -49,7 +52,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         else {
             getPhotos()
         }
-        //self.setupButtons()
         
     }
     
@@ -65,7 +67,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                     
                     let savePath = documentsDir! + "/\(photo.id).jpg"
                     var img = UIImage(named: savePath)
-                    println(img)
                 }
 
             }
@@ -165,8 +166,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         if photosFromCoreData?.count > 0 {
             
         
-        if let photosCoreData = photosFromCoreData as? Set<Photo> {
-            let photos = Array(photosCoreData)
+        if let photos = photosFromCoreData {
             let photoId = photos[indexPath.row].id!
             
             var documentsDir : String?
@@ -236,7 +236,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             cell?.layer.borderWidth = 2.0
             cell?.layer.borderColor = UIColor.redColor().CGColor
             indexPaths.append(indexPath)
-            println("applied Color")
         }
         
     }
@@ -247,22 +246,25 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     
     @IBAction func removePictures(sender: UIButton) {
-        //photosArr.removeObject(photosArr.objectAtIndex(0))
-        
-        
-        //photosArr.removeObjectsAtIndexes(<#indexes: NSIndexSet#>)
         collView.performBatchUpdates({ () -> Void in
             
             
+            
             for index in self.indexPaths {
-                println(self.photosArr.count)
-                println(index.row)
                 
-                if index.row >= self.photosArr.count {
-                    self.photosArr.removeLastObject()
-                }else {
-                    self.photosArr.removeObjectAtIndex(index.row)
+                if self.photosFromCoreData?.count > 0 {
+                    self.deleteFromCoreData(index.row);
                 }
+                
+                else {
+                    if index.row >= self.photosArr.count {
+                        self.photosArr.removeLastObject()
+                    }else {
+                        self.photosArr.removeObjectAtIndex(index.row)
+                    }
+                }
+                
+                
                 
                 
                 var cell = self.collView.cellForItemAtIndexPath(index)
@@ -277,18 +279,34 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         removeBtn.hidden = true
         newCollectionBtn.hidden = false
     }
-    /*func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+
+    func deleteFromCoreData(index: Int) {
         
-    } */
+        
 
-    /*
-    // MARK: - Navigation
+        var delPhoto : Photo?
+        if index >= photosFromCoreData!.count {
+            delPhoto = photosFromCoreData?.removeLast()
+            pin?.removePhotosObject(delPhoto)
+            
+        }else {
+            delPhoto = photosFromCoreData?.removeAtIndex(index)
+            pin?.removePhotosObject(delPhoto)
+        }
+        
+        pin?.willSave()
+        appDel.managedObjectContext?.save(nil)
+        
+        var documentsDir : String?
+        
+        var paths : [AnyObject] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
+        
+        if paths.count > 0 {
+            documentsDir = paths[0] as? String
+            let savePath = documentsDir! + "/\(delPhoto?.id).jpg"
+            NSFileManager.defaultManager().removeItemAtPath(savePath, error: nil)
+        }
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
     }
-    */
 
 }
