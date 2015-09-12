@@ -137,7 +137,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             // get coordinates
             let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
 
-            var annotation = MKPointAnnotation()
+            let annotation = MKPointAnnotation()
             annotation.coordinate = newCoordinate
             mapView.addAnnotation(annotation)
             
