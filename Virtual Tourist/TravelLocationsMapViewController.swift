@@ -132,6 +132,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         // get touch location
         
         if deletePinsLbl.hidden == true {
+            if gestureRecognizer.state == UIGestureRecognizerState.Began {
             let touchPoint = gestureRecognizer.locationInView(self.mapView)
             
             // get coordinates
@@ -146,6 +147,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             let longg = "\(annotation.coordinate.longitude)" as String
 
             PhotoLocations.getLocations(latt, longitude: longg, currPage: 1)
+            }
 
         }
     }
