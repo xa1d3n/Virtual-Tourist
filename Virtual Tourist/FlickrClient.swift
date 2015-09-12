@@ -36,17 +36,22 @@ class FlickrClient {
             }
         })
         
-        task.resume()
+        task!.resume()
         
-        return task
+        return task!
     }
     
     /* Helper: Given raw JSON, return a usable Foundation object */
     class func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
         
-        var parsingError: NSError? = nil
-        
-        let parsedResult: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError)
+        let parsingError: NSError? = nil
+        var parsedResult: AnyObject?
+        do {
+            try parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+        } catch {
+            
+        }
+        //let parsedResult: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError)
         
         if let error = parsingError {
             completionHandler(result: nil, error: error)

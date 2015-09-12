@@ -65,7 +65,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                 
             }
         }else {
-            println("no data")
+            print("no data")
         }
         
     }
@@ -77,7 +77,12 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         var results : [AnyObject]?
         
-        results = appDel.managedObjectContext?.executeFetchRequest(request, error: nil)
+        
+        do {
+            try results = appDel.managedObjectContext.executeFetchRequest(request)
+        } catch {
+            
+        }
         
         return results!
     }
@@ -153,12 +158,12 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     // handle removal of pin from map
     func removePin(gesture : UITapGestureRecognizer) {
         if deletePinsLbl.hidden == false {
-            var viewTst = mapView.hitTest(gesture.locationInView(mapView), withEvent: nil)
+            let viewTst = mapView.hitTest(gesture.locationInView(mapView), withEvent: nil)
             
             
             if (viewTst?.isKindOfClass(MKAnnotationView) == true) {
-                var ann = viewTst as! MKAnnotationView
-                var annotations = [AnyObject]()
+                let ann = viewTst as! MKAnnotationView
+                var annotations = [MKAnnotation]()
                 if let annotation = ann.annotation {
                     mapView.deselectAnnotation(annotation, animated: false)
                     annotations.append(annotation)
@@ -183,11 +188,15 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                     let longg : String =  result.valueForKey("longitude") as! String
                     
                     if latt == latitude && longitude == longg {
-                        appDel.managedObjectContext?.deleteObject(result as! NSManagedObject)
+                        appDel.managedObjectContext.deleteObject(result as! NSManagedObject)
                         
-                        println("deleted object")
+                        print("deleted object")
                     }
-                    appDel.managedObjectContext?.save(nil)
+                    do {
+                     try appDel.managedObjectContext.save()
+                    } catch {
+                        
+                    }
                     
                 }
 
@@ -198,10 +207,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     
     
-    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+    func mapView(mapView: MKMapView, didDeselectAnnotationView view: MKAnnotationView) {
         if deletePinsLbl.hidden == false {
             mapView.deselectAnnotation(view.annotation, animated: false)
-            mapView.removeAnnotation(view.annotation)
+            mapView.removeAnnotation(view.annotation!)
             
         }
     }
@@ -210,10 +219,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     
     // handle pin click
-    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        lat = "\(view.annotation.coordinate.latitude)"
-        long = "\(view.annotation.coordinate.longitude)"
+        lat = "\(view.annotation!.coordinate.latitude)"
+        long = "\(view.annotation!.coordinate.longitude)"
         
         if deletePinsLbl.hidden == true {
             self.performSegueWithIdentifier("showPhotoAlbum", sender: self)
@@ -246,7 +255,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         }
         
         if newState == MKAnnotationViewDragState.Ending {
-            println(startAnn.coordinate.latitude)
+            print(startAnn.coordinate.latitude)
 
             
         }
@@ -272,7 +281,11 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                     result.setValue(endingLat, forKey: latt)
                     result.setValue(endingLong, forKey: longg)
                 }
-                appDel.managedObjectContext?.save(nil)
+                do {
+                    try appDel.managedObjectContext.save()
+                } catch {
+                    
+                }
             }
         }
     }

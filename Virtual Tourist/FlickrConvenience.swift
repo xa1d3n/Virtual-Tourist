@@ -30,7 +30,7 @@ extension FlickrClient {
         
         let task = taskForGetMethod(method, completionHandler: { (result, error) -> Void in
             if error != nil {
-                println("error")
+                print("error")
             }
             else {
                 
@@ -65,7 +65,11 @@ extension FlickrClient {
             urlVars += [key + "=" + "\(escapedValue!)"]
             
         }
+        (!urlVars.isEmpty ? "?" : "").join(urlVars)
         
-        return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
+        return (!urlVars.isEmpty ? "?" : "").join(urlVars)
+        
+        //return (!urlVars.isEmpty ? "?" : "") + join("&", elements: urlVars)
+      //  return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
     }
 }

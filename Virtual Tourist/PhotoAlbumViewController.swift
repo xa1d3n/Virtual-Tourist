@@ -252,7 +252,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         pin?.willSave()
-        appDel.managedObjectContext?.save(nil)
+        do {
+            try appDel.managedObjectContext.save()
+        } catch {
+            
+        }
         
         var photosToDelete = Array<Photo>()
         photosToDelete.insert(delPhoto!, atIndex: 0)

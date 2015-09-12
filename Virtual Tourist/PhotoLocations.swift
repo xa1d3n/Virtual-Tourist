@@ -20,7 +20,7 @@ struct PhotoLocations {
                 
                 if let photos = result {
                     dispatch_async(dispatch_get_main_queue(), {
-                        var photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
+                        let photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
                         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
                         appDelegate.photoUrls = photosArr
                         
@@ -30,7 +30,7 @@ struct PhotoLocations {
                 
             }
             else {
-                println("error")
+                print("error")
             }
         }
     }
@@ -42,7 +42,7 @@ struct PhotoLocations {
         
         let context = appDel.managedObjectContext
         
-        var newPin = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context!) as! Pin
+        let newPin = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context) as! Pin
         
         
         
@@ -64,11 +64,11 @@ struct PhotoLocations {
         for url in imgUrls {
             //println(url)
             let imgUrl = url["url_m"]  as? String
-            var id = url["id"] as? String
-            var idNum = id?.toInt()
+            let id = url["id"] as? String
+            let idNum = Int((id)!)
             // println(idNum)
             
-            let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: context!) as! Photo
+            let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: context) as! Photo
             newPhoto.url = imgUrl
             newPhoto.id = idNum
             newPin.addPhotosObject(newPhoto)
@@ -86,7 +86,7 @@ struct PhotoLocations {
                         let savePath = documentsDir! + "/\(idNum!).jpg"
                         NSFileManager.defaultManager().createFileAtPath(savePath, contents: data, attributes: nil)
                         
-                        var image = UIImage(named: savePath)
+                        _ = UIImage(named: savePath)
                         // println(image)
                     }
                 }
@@ -96,7 +96,11 @@ struct PhotoLocations {
         
         
         
-        context?.save(nil)
+        do {
+            try context.save()
+        } catch {
+
+        }
     }
     
     // remove phtos from core data
@@ -105,7 +109,12 @@ struct PhotoLocations {
             for photo in photos {
                 pin.removePhotosObject(photo)
                 pin.willSave()
-                appDel.managedObjectContext?.save(nil)
+                do {
+                    try appDel.managedObjectContext.save()
+                } catch {
+                    
+                }
+                
             
             }
     }
@@ -120,7 +129,11 @@ struct PhotoLocations {
             documentsDir = paths[0] as? String
             for photo in photos {
                 let savePath = documentsDir! + "/\(photo.id).jpg"
-                NSFileManager.defaultManager().removeItemAtPath(savePath, error: nil)
+                do {
+                    try NSFileManager.defaultManager().removeItemAtPath(savePath)
+                } catch {
+                    
+                }
             }
         }
     }
@@ -157,7 +170,7 @@ struct PhotoLocations {
                 })
             }
             else {
-                println("error")
+                print("error")
             }
         }
         
@@ -173,12 +186,16 @@ struct PhotoLocations {
         let latPred = NSPredicate(format: "latitude = %@", latitude)
         let longPred = NSPredicate(format: "longitude = %@", longitude)
         
-        var compound = NSCompoundPredicate.andPredicateWithSubpredicates([latPred, longPred])
+        let compound = NSCompoundPredicate.andPredicateWithSubpredicates([latPred, longPred])
         request.predicate = compound
         
-        var results : [Pin]
+        var results = Array<Pin>()
         
-        results = viewCntrl.appDel.managedObjectContext?.executeFetchRequest(request, error: nil) as! [Pin]
+        do {
+            try results = viewCntrl.appDel.managedObjectContext.executeFetchRequest(request) as! [Pin]
+        } catch {
+            
+        }
         
         viewCntrl.selectedPin = results[0]
         
