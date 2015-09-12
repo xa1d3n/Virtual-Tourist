@@ -16,7 +16,6 @@
 		B30A15C11B77DA0400E5F3F2 /* Virtual_TouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15C01B77DA0400E5F3F2 /* Virtual_TouristTests.swift */; };
 		B30A15CB1B77DDAF00E5F3F2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30A15CA1B77DDAF00E5F3F2 /* MapKit.framework */; };
 		B30A15CD1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30A15CC1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift */; };
-		B31617091B953B60003895CD /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31617081B953B60003895CD /* DataHelper.swift */; };
 		B31617151B9696EB003895CD /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = B31617141B9696EB003895CD /* Photo.m */; };
 		B31617181B9696EC003895CD /* Pin.m in Sources */ = {isa = PBXBuildFile; fileRef = B31617171B9696EC003895CD /* Pin.m */; };
 		B339FB791B82D64800DE405E /* PhotoLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B339FB781B82D64800DE405E /* PhotoLocations.swift */; };
@@ -53,7 +52,6 @@
 		B30A15C01B77DA0400E5F3F2 /* Virtual_TouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Virtual_TouristTests.swift; sourceTree = "<group>"; };
 		B30A15CA1B77DDAF00E5F3F2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		B30A15CC1B77E00B00E5F3F2 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
-		B31617081B953B60003895CD /* DataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataHelper.swift; sourceTree = "<group>"; };
 		B31617121B9696EA003895CD /* Virtual Tourist-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Virtual Tourist-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		B31617131B9696EB003895CD /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = ../Photo.h; sourceTree = "<group>"; };
 		B31617141B9696EB003895CD /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = ../Photo.m; sourceTree = "<group>"; };
@@ -168,7 +166,6 @@
 			children = (
 				B35EA0F71B7AED77001C45C9 /* Clients */,
 				B3F1EEC61B88E574004779E3 /* HelperFunctions.swift */,
-				B31617081B953B60003895CD /* DataHelper.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -299,7 +296,6 @@
 				B30A15AD1B77DA0400E5F3F2 /* TravelLocationsMapViewController.swift in Sources */,
 				B35EA0FA1B7AEEC0001C45C9 /* FlickrClient.swift in Sources */,
 				B31617151B9696EB003895CD /* Photo.m in Sources */,
-				B31617091B953B60003895CD /* DataHelper.swift in Sources */,
 				B30A15AB1B77DA0400E5F3F2 /* Virtual_Tourist.xcdatamodeld in Sources */,
 				B339FB791B82D64800DE405E /* PhotoLocations.swift in Sources */,
 				B31617181B9696EC003895CD /* Pin.m in Sources */,

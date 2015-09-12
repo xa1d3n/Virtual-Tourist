@@ -43,11 +43,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
         
-       // setPin()
         HelperFunctions.setPin(self.mapView, latitude: latitude, longitude: longitude, shouldZoomIn:true)
         
         if let photos = photosFromCoreData {
-           // getPhotosFromCoreData(photos)
         }
         else {
             getPhotos()
@@ -55,25 +53,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
     }
     
-    func getPhotosFromCoreData(photos: Set<NSObject>) {
-        for photo in photos {
-            if let photo = photo as? Photo {
-                var documentsDir : String?
-                
-                var paths : [AnyObject] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
-                
-                if paths.count > 0 {
-                    documentsDir = paths[0] as? String
-                    
-                    let savePath = documentsDir! + "/\(photo.id).jpg"
-                    var img = UIImage(named: savePath)
-                }
-
-            }
-        }
-        
-    }
-    
+    // enable/disable buttons
     func setupButtons() {
         if self.photosArr?.count > 0 {
             self.noImagesLbl.hidden = true
@@ -88,8 +68,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         }
     }
     
+    // delete photos from core data & documents library, get new photos from flicker, put new photos into core data
     func getPhotos() {
-        photosFromCoreData?.removeAll(keepCapacity: true)
+        
+        PhotoLocations.removePhotosFromLibrary(pin!, photos: photosFromCoreData!)
+        PhotoLocations.removePhotosFromCoreData(pin!, photos: photosFromCoreData!)
+        photosFromCoreData?.removeAll(keepCapacity: false)
+        
         newCollectionBtn.enabled = false
         
         var spinner = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
@@ -98,48 +83,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
         view.addSubview(spinner)
         spinner.startAnimating()
-        FlickrClient.sharedInstance().getPhotosForLocation(latitude, long: longitude, page: "\(currPage)") { (result, error) -> Void in
-            if error == nil {
-                dispatch_async(dispatch_get_main_queue(), {
-                    if let photos = result {
-                        self.photosArr = photos.photoUrls.mutableCopy() as! NSMutableArray
-                        if self.currPage <= self.photosArr.count {
-                            self.currPage++
-                        }
-                        else {
-                            self.newCollectionBtn.enabled = false
-                        }
-                    }
-                    if self.photosArr.count > 0 {
-                        self.noImagesLbl.hidden = true
-                        self.collView.hidden = false
-                        self.collView.reloadData()
-                        spinner.stopAnimating()
-                        self.newCollectionBtn.enabled = true
-                    }
-                    else {
-                        self.noImagesLbl.hidden = false
-                        self.collView.hidden = true
-                        self.newCollectionBtn.enabled = false
-                    }
-                })
-            }
-            else {
-                println("error")
-            }
-        }
-    }
-    
-
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        
+        PhotoLocations.getPhotos(self,  spinner: spinner)
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        var items = 1
+        var items = 0
     
         if let photosCoreData = photosFromCoreData?.count {
             if photosCoreData > 0 {
@@ -155,11 +105,17 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             items = photoCount
        }
        
-        
+        if items < 1 {
+            noImagesLbl.hidden = false
+        }
+        else {
+            noImagesLbl.hidden = true
+        }
         
         return items
     }
     
+    // display photos from core data or retrive from flikr
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
          let cell : PhotoCell = collectionView.dequeueReusableCellWithReuseIdentifier("image", forIndexPath: indexPath) as! PhotoCell
         
@@ -175,7 +131,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             if paths.count > 0 {
                 documentsDir = paths[0] as? String
-                //let savePath = documentsDir! + "/\(idNum).jpg"
                 let savePath = documentsDir! + "/\(photoId).jpg"
                 var img = UIImage(named: savePath)
                 cell.imageView.image = img
@@ -206,6 +161,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         return cell
     }
     
+    // handle deletion
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         removeBtn.hidden = false
         newCollectionBtn.hidden = true
@@ -240,11 +196,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
     }
     
+    // handle new collection button click
     @IBAction func newCollection(sender: UIButton) {
         getPhotos()
     }
     
     
+    // remove pictures
     @IBAction func removePictures(sender: UIButton) {
         collView.performBatchUpdates({ () -> Void in
             
@@ -280,9 +238,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         newCollectionBtn.hidden = false
     }
 
+    // remove pictures from core data & documents
     func deleteFromCoreData(index: Int) {
-        
-        
 
         var delPhoto : Photo?
         if index >= photosFromCoreData!.count {
@@ -297,15 +254,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         pin?.willSave()
         appDel.managedObjectContext?.save(nil)
         
-        var documentsDir : String?
+        var photosToDelete = Array<Photo>()
+        photosToDelete.insert(delPhoto!, atIndex: 0)
         
-        var paths : [AnyObject] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
-        
-        if paths.count > 0 {
-            documentsDir = paths[0] as? String
-            let savePath = documentsDir! + "/\(delPhoto?.id).jpg"
-            NSFileManager.defaultManager().removeItemAtPath(savePath, error: nil)
-        }
+        PhotoLocations.removePhotosFromLibrary(pin!, photos: photosToDelete)
 
     }
 

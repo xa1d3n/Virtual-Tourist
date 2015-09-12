@@ -40,7 +40,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         // add pin
         uilpgr = UILongPressGestureRecognizer(target: self, action: "addPin:")
-        uilpgr.minimumPressDuration = 0.5
+        uilpgr.minimumPressDuration = 1.0
         // add gesture reconginzer to map view
         mapView.addGestureRecognizer(uilpgr)
         
@@ -51,9 +51,9 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
     }
     
+    // Retrive pins from core data and add to map
     func addPinsToMapFromCoreData() {
         let results = getPinsFromCoreData()
-        
         
         if results.count > 0 {
             for result : AnyObject in results {
@@ -70,6 +70,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
     }
     
+    // retrevie pins from core data
     func getPinsFromCoreData() -> [AnyObject]{
         let request = NSFetchRequest(entityName: "Pin")
         request.returnsObjectsAsFaults = false
@@ -81,26 +82,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         return results!
     }
     
-    func getPhotosFromCoreData(latitude: String, longitude: String) -> Set<NSObject> {
-        let request = NSFetchRequest(entityName: "Pin")
-        request.returnsObjectsAsFaults = false
-        
-        let latPred = NSPredicate(format: "latitude = %@", latitude)
-        let longPred = NSPredicate(format: "longitude = %@", longitude)
-        
-        var compound = NSCompoundPredicate.andPredicateWithSubpredicates([latPred, longPred])
-        request.predicate = compound
-        
-        var results : [Pin]
-        
-        results = appDel.managedObjectContext?.executeFetchRequest(request, error: nil) as! [Pin]
-        
-        selectedPin = results[0] as? Pin
-        
-        
-        return results[0].photos
-    }
-    
+
+    // slide map up when edit button is clicked
     func resizeMap(makeSmaller : Bool) {
         let lblHeight : CGFloat = deletePinsLbl.frame.height
         let mapHeight : CGFloat = view.frame.height
@@ -130,6 +113,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         deletePinsLbl.hidden = true
     }
     
+    // handle edit button click
     func edit() {
         resizeMap(true)
         self.navigationItem.rightBarButtonItem = doneButton
@@ -137,11 +121,13 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
 
     }
     
+    // handle done editing button click
     func done() {
         resizeMap(false)
         self.navigationItem.rightBarButtonItem = editButton
     }
     
+    // add pin to map and display
     func addPin(gestureRecognizer : UIGestureRecognizer) {
         // get touch location
         
@@ -164,10 +150,9 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    
+    // handle removal of pin from map
     func removePin(gesture : UITapGestureRecognizer) {
         if deletePinsLbl.hidden == false {
-            println("deleting")
             var viewTst = mapView.hitTest(gesture.locationInView(mapView), withEvent: nil)
             
             
@@ -188,6 +173,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    // remove pins from core data
     func removePinsFromCoreData(latitude : String, longitude : String) {
         let results = getPinsFromCoreData()
         
@@ -261,14 +247,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         if newState == MKAnnotationViewDragState.Ending {
             println(startAnn.coordinate.latitude)
-          //  println("end drag\(view.annotation.coordinate.latitude)")
-            //update pin location
-            /*if let customAnnot = view.annotation as? myAnnotation {
-                cData.updatePinLocation(customAnnot.pinID, newValue: customAnnot.coordinate)
-            } */
-            //println(startingLat)
-           // println(startingLong)
-            //updatePinFromCoreData(startingLat, startingLong: startingLong, endingLat: "\(view.annotation.coordinate.latitude)", endingLong: "\(view.annotation.coordinate.longitude)")
 
             
         }
@@ -303,7 +281,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         if (segue.identifier == "showPhotoAlbum") {
             let secondViewController : PhotoAlbumViewController = segue.destinationViewController as! PhotoAlbumViewController
             
-            let photos = self.getPhotosFromCoreData(lat, longitude: long) as? Set<Photo>
+            let photos = PhotoLocations.getPhotosFromCoreData(self, latitude: lat, longitude: long) as? Set<Photo>
             let photosArray = Array(photos!)
             secondViewController.photosFromCoreData = photosArray
             secondViewController.latitude = lat
