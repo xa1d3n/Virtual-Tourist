@@ -133,20 +133,20 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         if deletePinsLbl.hidden == true {
             if gestureRecognizer.state == UIGestureRecognizerState.Began {
-            let touchPoint = gestureRecognizer.locationInView(self.mapView)
-            
-            // get coordinates
-            let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
+                let touchPoint = gestureRecognizer.locationInView(self.mapView)
+                
+                // get coordinates
+                let newCoordinate : CLLocationCoordinate2D = mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
 
-            var annotation = MKPointAnnotation()
-            annotation.coordinate = newCoordinate
-            mapView.addAnnotation(annotation)
-            
-            
-            let latt = "\(annotation.coordinate.latitude)" as String
-            let longg = "\(annotation.coordinate.longitude)" as String
+                var annotation = MKPointAnnotation()
+                annotation.coordinate = newCoordinate
+                mapView.addAnnotation(annotation)
+                
+                
+                let latt = "\(annotation.coordinate.latitude)" as String
+                let longg = "\(annotation.coordinate.longitude)" as String
 
-            PhotoLocations.getLocations(latt, longitude: longg, currPage: 1)
+                PhotoLocations.getLocations(latt, longitude: longg, currPage: 1, pin: nil)
             }
 
         }
@@ -241,42 +241,24 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         
-        var startAnn : MKAnnotation!
-    
-        if newState == MKAnnotationViewDragState.Dragging {
-
-        }
-        
         if newState == MKAnnotationViewDragState.Ending {
-            println(startAnn.coordinate.latitude)
+            updatePinFromCoreData(selectedPin!.latitude!, startingLong: selectedPin!.longitude, endingLat: "\(view.annotation.coordinate.latitude)", endingLong: "\(view.annotation.coordinate.longitude)")
 
             
         }
-        
-
-        
-        if newState == MKAnnotationViewDragState.Starting {
-            startAnn = view.annotation
-        }
     }
     
+    // update pin latitude/longitude and photos
     func updatePinFromCoreData(startingLat: String, startingLong : String, endingLat : String, endingLong: String) {
-        let results = getPinsFromCoreData()
+        let photoSet = selectedPin!.photos as? Set<Photo>
+        let photoArray = Array(photoSet!)
+        PhotoLocations.removePhotosFromCoreData(selectedPin!, photos: photoArray)
+        PhotoLocations.removePhotosFromLibrary(selectedPin!, photos: photoArray)
         
-        if results.count > 0 {
-            for result : AnyObject in results {
-                
-                let latt : String =  result.valueForKey("latitude") as! String
-                let longg : String =  result.valueForKey("longitude") as! String
-                
-                if latt == startingLat && longg == startingLong {
-                    
-                    result.setValue(endingLat, forKey: latt)
-                    result.setValue(endingLong, forKey: longg)
-                }
-                appDel.managedObjectContext?.save(nil)
-            }
-        }
+        selectedPin?.latitude = endingLat
+        selectedPin?.longitude = endingLong
+        
+        PhotoLocations.getLocations(endingLat, longitude: endingLong, currPage: 1, pin: selectedPin!)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

@@ -13,7 +13,7 @@ import CoreData
 struct PhotoLocations {
     
     // get phtos from flickr
-    static func getLocations(latitude: String, longitude: String, currPage: Int) {
+    static func getLocations(latitude: String, longitude: String, currPage: Int, pin: Pin?) {
 
         FlickrClient.sharedInstance().getPhotosForLocation(latitude, long: longitude, page: "\(currPage)") { (result, error) -> Void in
             if error == nil {
@@ -24,7 +24,12 @@ struct PhotoLocations {
                         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
                         appDelegate.photoUrls = photosArr
                         
-                        self.saveToCoreData(latitude, longitude: longitude, imgUrls: photosArr)
+                        if let pin = pin {
+                            self.savePhotosToCoreData(pin, imgUrls: photosArr)
+                        }
+                        else {
+                            self.saveToCoreData(latitude, longitude: longitude, imgUrls: photosArr)
+                        }
                     })
                 }
                 
